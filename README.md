@@ -10,11 +10,10 @@ Additionally, there are features that I have not implemented but are needed, and
 
 - Transaction timestamps.
 - Client/Merchant definitions and resolution.
-- Request/Response models.
-  - TransactionStore is the only struct that has json tags.
-    - Validation of models.
-- Layering of logic.
-  - The exercise was too small for me to utilise my layered application skeleton. I've used that before to my detriment in interviews, as it requires a bunch of supplemental tools like task-go, pre-commit, mocks etc. It shows off the full range of my work but is likely too much.
+- Model validation. For this I would use https://github.com/go-playground/validator
+- Layering of logic. I kept things as basic as possible while also showing  a consideration for separation.
+- Creation of test objects (comes with layering).
+- Error handling with https://github.com/hedhyw/semerr to be transport-independant for various delivery methods.
 - I would default to OpenAPI definitions for models. It allows for tools such as the typescript generator to make it easy for front end integrations.
 
 I'm happy to discuss all this, of course, if you have any questions.

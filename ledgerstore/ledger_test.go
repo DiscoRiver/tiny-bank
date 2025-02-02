@@ -9,7 +9,7 @@ import (
 func TestNewLedger(t *testing.T) {
 	l := NewLedgerStore()
 	assert.NotNil(t, l, "LedgerStore should be initialized")
-	assert.Equal(t, 0, l.GetBalance(), "Initial balance should be 0")
+	assert.Equal(t, 0, l.GetBalance().Amount, "Initial balance should be 0")
 	assert.Empty(t, l.GetTransactions(), "TransactionStore history should be empty")
 }
 
@@ -17,14 +17,14 @@ func TestDeposit(t *testing.T) {
 	l := NewLedgerStore()
 
 	l.Deposit(100)
-	assert.Equal(t, 100, l.GetBalance(), "Balance should be updated after deposit")
+	assert.Equal(t, 100, l.GetBalance().Amount, "Balance should be updated after deposit")
 
 	l.Deposit(50)
-	assert.Equal(t, 150, l.GetBalance(), "Balance should reflect multiple deposits")
+	assert.Equal(t, 150, l.GetBalance().Amount, "Balance should reflect multiple deposits")
 
 	transactions := l.GetTransactions()
-	assert.Len(t, transactions, 2, "TransactionStore count should match deposits")
-	assert.Equal(t, "deposit", transactions[0].Type, "TransactionStore type should be deposit")
+	assert.Len(t, transactions.Transactions, 2, "TransactionStore count should match deposits")
+	assert.Equal(t, "deposit", transactions.Transactions[0].Type, "TransactionStore type should be deposit")
 }
 
 func TestWithdraw_Success(t *testing.T) {
@@ -33,11 +33,11 @@ func TestWithdraw_Success(t *testing.T) {
 
 	err := l.Withdraw(100)
 	assert.NoError(t, err, "Withdraw should succeed if funds are available")
-	assert.Equal(t, 100, l.GetBalance(), "Balance should be updated after withdrawal")
+	assert.Equal(t, 100, l.GetBalance().Amount, "Balance should be updated after withdrawal")
 
 	transactions := l.GetTransactions()
-	assert.Len(t, transactions, 2, "TransactionStore count should include withdrawals")
-	assert.Equal(t, "withdrawal", transactions[1].Type, "TransactionStore type should be withdrawal")
+	assert.Len(t, transactions.Transactions, 2, "TransactionStore count should include withdrawals")
+	assert.Equal(t, "withdrawal", transactions.Transactions[1].Type, "TransactionStore type should be withdrawal")
 }
 
 func TestWithdraw_InsufficientFunds(t *testing.T) {
@@ -46,8 +46,8 @@ func TestWithdraw_InsufficientFunds(t *testing.T) {
 
 	err := l.Withdraw(100)
 	assert.Error(t, err, "Withdraw should fail if funds are insufficient")
-	assert.Equal(t, 50, l.GetBalance(), "Balance should remain unchanged on failed withdrawal")
-	assert.Len(t, l.GetTransactions(), 1, "Failed withdrawal should not be recorded")
+	assert.Equal(t, 50, l.GetBalance().Amount, "Balance should remain unchanged on failed withdrawal")
+	assert.Len(t, l.GetTransactions().Transactions, 1, "Failed withdrawal should not be recorded")
 }
 
 func TestConcurrentAccess(t *testing.T) {
@@ -75,6 +75,6 @@ func TestConcurrentAccess(t *testing.T) {
 		<-done
 	}
 
-	assert.Equal(t, 50, l.GetBalance(), "Final balance should be consistent with concurrent operations")
-	assert.Len(t, l.GetTransactions(), 15, "All transactions should be recorded correctly")
+	assert.Equal(t, 50, l.GetBalance().Amount, "Final balance should be consistent with concurrent operations")
+	assert.Len(t, l.GetTransactions().Transactions, 15, "All transactions should be recorded correctly")
 }

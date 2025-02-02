@@ -28,7 +28,6 @@ func HandleDeposit(w http.ResponseWriter, r *http.Request) {
 	l.Deposit(amount)
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Deposit successful"))
 }
 
 // HandleWithdraw handles withdrawal requests
@@ -51,7 +50,6 @@ func HandleWithdraw(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Withdrawal successful"))
 }
 
 // HandleBalance returns the current balance
@@ -59,7 +57,7 @@ func HandleBalance(w http.ResponseWriter, r *http.Request) {
 	balance := l.GetBalance()
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]int{"balance": balance})
+	json.NewEncoder(w).Encode(balance)
 }
 
 // HandleTransactions returns transaction history

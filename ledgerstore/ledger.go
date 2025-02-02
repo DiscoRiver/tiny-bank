@@ -2,27 +2,22 @@ package ledgerstore
 
 import (
 	"errors"
+	"github.com/discoriver/tiny-bank/model"
 	"sync"
 )
 
 // LedgerStore structure to hold transactions
 type LedgerStore struct {
 	mu           sync.Mutex
-	balance      int
-	transactions []TransactionStore
-}
-
-// TransactionStore structure
-type TransactionStore struct {
-	Amount int    `json:"amount"`
-	Type   string `json:"type"`
+	balance      model.Balance
+	transactions model.Transactions
 }
 
 // NewLedgerStore creates a new instance
 func NewLedgerStore() *LedgerStore {
 	return &LedgerStore{
-		balance:      0,
-		transactions: []TransactionStore{},
+		balance:      model.Balance{Amount: 0},
+		transactions: model.Transactions{},
 	}
 }
 
@@ -30,8 +25,8 @@ func NewLedgerStore() *LedgerStore {
 func (l *LedgerStore) Deposit(amount int) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	l.balance += amount
-	l.transactions = append(l.transactions, TransactionStore{Amount: amount, Type: "deposit"})
+	l.balance.Amount += amount
+	l.transactions.Transactions = append(l.transactions.Transactions, model.Transaction{Amount: amount, Type: "deposit"})
 }
 
 // Withdraw money
@@ -39,24 +34,24 @@ func (l *LedgerStore) Withdraw(amount int) error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	if l.balance < amount {
+	if l.balance.Amount < amount {
 		return errors.New("insufficient funds")
 	}
 
-	l.balance -= amount
-	l.transactions = append(l.transactions, TransactionStore{Amount: amount, Type: "withdrawal"})
+	l.balance.Amount -= amount
+	l.transactions.Transactions = append(l.transactions.Transactions, model.Transaction{Amount: amount, Type: "withdrawal"})
 	return nil
 }
 
 // GetBalance returns current balance
-func (l *LedgerStore) GetBalance() int {
+func (l *LedgerStore) GetBalance() model.Balance {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	return l.balance
 }
 
 // GetTransactions returns transaction history
-func (l *LedgerStore) GetTransactions() []TransactionStore {
+func (l *LedgerStore) GetTransactions() model.Transactions {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	return l.transactions
