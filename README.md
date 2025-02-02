@@ -4,7 +4,20 @@ A lightweight, in-memory ledger API for tracking deposits, withdrawals, and bala
 
 For simplicity, the design and documentation are both represented in this README. In an ideal world I would create design docs, most likely an ERD/PRD with a supplemental ADR doc if needed.
 
-For a micro exercise like this, I assume you're looking for fundamentals, so that's where I've focused. I am aware of double entry accounting databases such as the one [described by Square](https://developer.squareup.com/blog/books-an-immutable-double-entry-accounting-database-service/), and consensus algorithms such as Paxos and Raft, but have never implemented them.
+For a micro exercise like this, I assume you're looking for fundamentals, and ability to create something to spec, so that's where I've focused. I've built this as I would do a prototype or proof-of-concept, with maximum expediency as I have very limited time (overall I spent about 90 minutes on all of this). I am aware of double entry accounting databases such as the one [described by Square](https://developer.squareup.com/blog/books-an-immutable-double-entry-accounting-database-service/), and consensus algorithms such as Paxos and Raft, but have never implemented them. 
+
+Additionally, there are features that I have not implemented but are needed, and it's important I highlight them, but they're too fundamental for me to include in the future enhancements at the bottom of this page;
+
+- Transaction timestamps.
+- Client/Merchant definitions and resolution.
+- Request/Response models.
+  - TransactionStore is the only struct that has json tags.
+    - Validation of models.
+- Layering of logic.
+  - The exercise was too small for me to utilise my layered application skeleton. I've used that before to my detriment in interviews, as it requires a bunch of supplemental tools like task-go, pre-commit, mocks etc. It shows off the full range of my work but is likely too much.
+- I would default to OpenAPI definitions for models. It allows for tools such as the typescript generator to make it easy for front end integrations.
+
+I'm happy to discuss all this, of course, if you have any questions.
 
 # Overview
 
@@ -81,8 +94,35 @@ This system is designed to be simple, fast, and stateless, running entirely in m
 go run main.go
 ```
 
-Then, interact via curl or Postman.
+# Usage
 
+1. Deposit Money
+```shell
+curl -X POST "http://localhost:8080/deposit?amount=100"
+```
+
+2. Withdraw Money
+```shell
+curl -X POST "http://localhost:8080/withdraw?amount=50"
+```
+
+3. Check Balance
+```shell
+curl -X GET "http://localhost:8080/balance"
+```
+
+4. Get Transaction History
+```shell
+curl -X GET "http://localhost:8080/transactions"
+```
+
+# Testing
+
+Run the tests using:
+
+```shell
+go test ./ledger -v
+```
 # Future Enhancements
 
 🚀 Add persistent storage (SQLite, PostgreSQL)  
